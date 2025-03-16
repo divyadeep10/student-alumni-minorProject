@@ -14,7 +14,7 @@ const FindMentor = () => {
     const fetchMentors = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get('http://localhost:5000/api/alumni/top-alumni', {
+        const res = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/alumni/top-alumni', {
           headers: { Authorization: token },
         });
         setMentors(res.data.topAlumni);
@@ -32,7 +32,7 @@ const FindMentor = () => {
   const sendRequest = async (alumniId) => {
     try {
       await axios.post(
-        'http://localhost:5000/api/student/request-mentor',
+        'https://alumni-student-minor-project-backend.vercel.app/api/student/request-mentor',
         { alumniId },
         { headers: { Authorization: token } }
       );

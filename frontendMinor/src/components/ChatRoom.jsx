@@ -19,7 +19,7 @@ const ChatRoom = () => {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/discussion/discussions', {
+      const res = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions', {
         headers: { 'Authorization': token }
       });
       setPosts(res.data);
@@ -44,7 +44,7 @@ const ChatRoom = () => {
     
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/discussion/alumni/post', 
+      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/discussion/alumni/post', 
         { title: newTitle, content: newPost }, 
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -71,7 +71,7 @@ const ChatRoom = () => {
     if (!commentText?.trim()) return;
     
     try {
-      await axios.post(`http://localhost:5000/api/discussion/discussions/${postId}/comment`, 
+      await axios.post(`https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions/${postId}/comment`, 
         { comment: commentText }, 
         { headers: { 'Authorization': `Bearer ${token}`} }
       );

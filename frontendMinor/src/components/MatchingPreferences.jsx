@@ -48,7 +48,7 @@ const MatchingPreferences = () => {
     const fetchPreferences = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/matching/preferences', {
+        const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/matching/preferences', {
           headers: { Authorization: token }
         });
         if (response.data) {
@@ -168,7 +168,7 @@ const MatchingPreferences = () => {
     setSuccess('');
 
     try {
-      await axios.put('http://localhost:5000/api/matching/preferences', preferences, {
+      await axios.put('https://alumni-student-minor-project-backend.vercel.app/api/matching/preferences', preferences, {
         headers: { Authorization: token }
       });
       setSuccess('Matching preferences updated successfully!');
