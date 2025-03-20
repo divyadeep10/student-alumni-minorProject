@@ -28,8 +28,8 @@ const LandingPage = ({ role }) => {
       try {
         // Use the existing dashboard endpoints
         const url = role === 'student'
-          ? 'http://localhost:5000/api/student/dashboard'
-          : 'http://localhost:5000/api/alumni/dashboard';
+          ? 'https://alumni-student-minor-project-backend.vercel.app/api/student/dashboard'
+          : 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/dashboard';
         
         const response = await axios.get(url, {
           headers: { 'Authorization': token }
@@ -39,8 +39,8 @@ const LandingPage = ({ role }) => {
         
         // Also fetch stats if needed
         const statsUrl = role === 'student'
-          ? 'http://localhost:5000/api/student/dashboard-stats'
-          : 'http://localhost:5000/api/alumni/dashboard-stats';
+          ? 'https://alumni-student-minor-project-backend.vercel.app/api/student/dashboard-stats'
+          : 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/dashboard-stats';
           
         const statsResponse = await axios.get(statsUrl, {
           headers: { 'Authorization': token }

@@ -13,12 +13,12 @@ const WebinarSchedulerFeed = () => {
       try {
         setLoading(true);
         // Fetch regular webinars
-        const webinarResponse = await axios.get('http://localhost:5000/api/videos/student/webinars', {
+        const webinarResponse = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/videos/student/webinars', {
           headers: { Authorization: token },
         });
         
         // Fetch live webinars
-        const liveResponse = await axios.get('http://localhost:5000/api/videos/student/live-webinars', {
+        const liveResponse = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/videos/student/live-webinars', {
           headers: { Authorization: token },
         });
         
@@ -44,7 +44,7 @@ const WebinarSchedulerFeed = () => {
   // Separate function to fetch only live webinars for polling
   const fetchLiveWebinars = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/videos/student/live-webinars', {
+      const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/videos/student/live-webinars', {
         headers: { Authorization: token },
       });
       setLiveWebinars(response.data);
@@ -84,7 +84,7 @@ const WebinarSchedulerFeed = () => {
   // Join live webinar
   const joinLiveWebinar = async (webinarId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/videos/can-join/${webinarId}`, {
+      const response = await axios.get(`https://alumni-student-minor-project-backend.vercel.app/api/videos/can-join/${webinarId}`, {
         headers: { Authorization: token },
       });
       
@@ -232,7 +232,7 @@ const WebinarSchedulerFeed = () => {
                         <video 
                           controls 
                           className="w-full h-full object-cover"
-                          src={`http://localhost:5000/api/videos/stream/${webinar._id}`}
+                          src={`https://alumni-student-minor-project-backend.vercel.app/api/videos/stream/${webinar._id}`}
                           poster="/video-thumbnail.png"
                         >
                           Your browser does not support the video tag.

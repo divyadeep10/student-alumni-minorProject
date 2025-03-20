@@ -22,7 +22,7 @@ const MyMentors = () => {
     const fetchMentors = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/student/my-mentors', {
+        const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/student/my-mentors', {
           headers: { 'Authorization': token }
         });
         setMentors(response.data.mentors);
@@ -43,7 +43,7 @@ const MyMentors = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/student/view-mentor/${mentorId}`, {
+      const response = await axios.get(`https://alumni-student-minor-project-backend.vercel.app/api/student/view-mentor/${mentorId}`, {
         headers: { 'Authorization': token }
       });
       setMentorDetails(response.data);

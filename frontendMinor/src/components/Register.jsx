@@ -27,7 +27,7 @@ const Register = () => {
     setError('');
     
     try {
-      const endpoint = `http://localhost:5000/api/auth/register/${role}`;
+      const endpoint = `https://alumni-student-minor-project-backend.vercel.app/api/auth/register/${role}`;
       const payload = {
         name: formData.name,
         email: formData.email,

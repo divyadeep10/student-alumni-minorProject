@@ -47,7 +47,7 @@ const AlumniMatchingProfile = () => {
     const fetchProfile = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/matching/alumni-profile', {
+        const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/matching/alumni-profile', {
           headers: { Authorization: token }
         });
         if (response.data) {
@@ -157,7 +157,7 @@ const AlumniMatchingProfile = () => {
     setSuccess('');
 
     try {
-      await axios.put('http://localhost:5000/api/matching/alumni-profile', profile, {
+      await axios.put('https://alumni-student-minor-project-backend.vercel.app/api/matching/alumni-profile', profile, {
         headers: { Authorization: token }
       });
       setSuccess('Mentoring profile updated successfully!');
