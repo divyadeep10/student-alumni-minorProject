@@ -41,7 +41,7 @@ const CollegeChatbot = () => {
 
     try {
       // Send message to backend
-      const response = await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/chat', {
+      const response = await axios.post('http://localhost:5000/api/chat', {
         message: message
       });
 
@@ -74,7 +74,7 @@ const CollegeChatbot = () => {
   // Handle reset chat
   const handleResetChat = async () => {
     try {
-      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/reset');
+      await axios.post('http://localhost:5000/api/reset');
       setMessages([
         { 
           id: 1, 
