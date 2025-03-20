@@ -24,7 +24,7 @@ const MentorRecommendations = () => {
   const fetchRecommendations = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/matching/recommendations', {
+      const response = await axios.get('http://localhost:5000/api/matching/recommendations', {
         headers: { Authorization: token }
       });
       
@@ -107,11 +107,11 @@ const MentorRecommendations = () => {
       setIsLoading(false);
     }
   };
-//    'https://alumni-student-minor-project-backend.vercel.app/api/student/request-mentor',
+//    'http://localhost:5000/api/student/request-mentor',
 // { alumniId },
   const handleSendRequest = async (alumniId) => {
     try {
-      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/student/request-mentor', 
+      await axios.post('http://localhost:5000/api/student/request-mentor', 
         { alumniId }, 
         { headers: { Authorization: token } }
       );
@@ -125,7 +125,7 @@ const MentorRecommendations = () => {
   const handleFeedback = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/matching/feedback', 
+      await axios.post('http://localhost:5000/api/matching/feedback', 
         feedback, 
         { headers: { Authorization: token } }
       );

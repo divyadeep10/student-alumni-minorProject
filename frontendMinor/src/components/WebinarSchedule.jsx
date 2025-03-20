@@ -26,7 +26,7 @@ const WebinarSchedule = () => {
   const fetchWebinars = async () => {
     try {
       setIsLoading(true);
-      const endpoint = role === 'alumni' ? 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/my-webinars' : 'https://alumni-student-minor-project-backend.vercel.app/api/student/getter/webinars';
+      const endpoint = role === 'alumni' ? 'http://localhost:5000/api/alumni/my-webinars' : 'http://localhost:5000/api/student/getter/webinars';
       const { data } = await axios.get(endpoint, { headers: { Authorization: token } });
       setWebinars(data);
     } catch (error) {
@@ -40,7 +40,7 @@ const WebinarSchedule = () => {
   const scheduleWebinar = async e => {
     e.preventDefault();
     try {
-      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/alumni/webinar', newWebinar, { headers: { Authorization: token } });
+      await axios.post('http://localhost:5000/api/alumni/webinar', newWebinar, { headers: { Authorization: token } });
       setNewWebinar({ title: '', description: '', scheduledAt: '', videoType: 'recorded', videoLink: '' });
       fetchWebinars();
     } catch (err) {
@@ -56,7 +56,7 @@ const WebinarSchedule = () => {
     
     setUploading(true);
     try {
-      await axios.post(`https://alumni-student-minor-project-backend.vercel.app/api/videos/upload/${webinarId}`, formData, {
+      await axios.post(`http://localhost:5000/api/videos/upload/${webinarId}`, formData, {
         headers: { Authorization: token, 'Content-Type': 'multipart/form-data' },
         onUploadProgress: e => setUploadProgress(Math.round((e.loaded * 100) / e.total))
       });
@@ -73,7 +73,7 @@ const WebinarSchedule = () => {
   const deleteVideo = async webinarId => {
     if (!window.confirm("Are you sure you want to delete this video?")) return;
     try {
-      await axios.delete(`https://alumni-student-minor-project-backend.vercel.app/api/videos/delete/${webinarId}`, { headers: { Authorization: token } });
+      await axios.delete(`http://localhost:5000/api/videos/delete/${webinarId}`, { headers: { Authorization: token } });
       fetchWebinars();
     } catch (error) {
       console.error("Error deleting video:", error);
@@ -190,7 +190,7 @@ const WebinarSchedule = () => {
                 
                 {webinar.isUploaded && (
                   <div className="mt-4">
-                    <video controls className="w-full rounded" src={`https://alumni-student-minor-project-backend.vercel.app/api/videos/stream/${webinar._id}`}>
+                    <video controls className="w-full rounded" src={`http://localhost:5000/api/videos/stream/${webinar._id}`}>
                       Your browser does not support the video tag.
                     </video>
                   </div>

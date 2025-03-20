@@ -28,8 +28,8 @@ const LandingPage = ({ role }) => {
       try {
         // Use the existing dashboard endpoints
         const url = role === 'student'
-          ? 'https://alumni-student-minor-project-backend.vercel.app/api/student/dashboard'
-          : 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/dashboard';
+          ? 'http://localhost:5000/api/student/dashboard'
+          : 'http://localhost:5000/api/alumni/dashboard';
         
         const response = await axios.get(url, {
           headers: { 'Authorization': token }
@@ -39,8 +39,8 @@ const LandingPage = ({ role }) => {
         
         // Also fetch stats if needed
         const statsUrl = role === 'student'
-          ? 'https://alumni-student-minor-project-backend.vercel.app/api/student/dashboard-stats'
-          : 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/dashboard-stats';
+          ? 'http://localhost:5000/api/student/dashboard-stats'
+          : 'http://localhost:5000/api/alumni/dashboard-stats';
           
         const statsResponse = await axios.get(statsUrl, {
           headers: { 'Authorization': token }
@@ -145,6 +145,26 @@ const LandingPage = ({ role }) => {
                 className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-center font-medium transition-colors"
               >
                 View Recommendations
+              </Link>
+            </div>
+          </motion.div>
+          
+          {/* Add My Mentors card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="bg-gradient-to-br from-green-700 to-green-900 rounded-xl overflow-hidden shadow-lg"
+          >
+            <div className="h-2 bg-green-500"></div>
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-white mb-4">My Mentors</h3>
+              <p className="text-green-200 mb-6">Connect with your mentors and view their profiles</p>
+              <Link 
+                to="/my-mentors" 
+                className="block w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-center font-medium transition-colors"
+              >
+                View My Mentors
               </Link>
             </div>
           </motion.div>

@@ -15,6 +15,8 @@ import ChatBot from './components/ChatBotAI';
 import MatchingPreferences from './components/MatchingPreferences';
 import MentorRecommendations from './components/MentorRecommendations';
 import AlumniMatchingProfile from './components/AlumniMatchingProfile';
+import MyMentors from './components/MyMentors';
+import MyMentees from './components/MyMentees';
 
 function App() {
   // Check if user is authenticated and store role (student/alumni)
@@ -37,6 +39,7 @@ function App() {
         <Route path="/login" element={<Login setAuth={setAuth} setRole={setRole} />} />
         <Route path="/register" element={<Register />} />
         {/* <Route path="/" element={<Home />} /> */}
+        
         <Route path="/dashboard" element={<Dashboard auth={auth} role={role} />} />
         <Route path="/find-mentor" element={<FindMentor auth={auth} role={role} />} />
         <Route path="/requests" element={<Requests auth={auth} role={role} />} />
@@ -46,7 +49,9 @@ function App() {
         <Route path="/chatbot" element={<ChatBot auth={auth} role={role} />} />
         <Route path="/matching-preferences" element={<MatchingPreferences auth={auth} role={role} />} />
         <Route path="/mentor-recommendations" element={<MentorRecommendations auth={auth} role={role} />} /> 
-        <Route path="/alumni-matching-profile" element={<AlumniMatchingProfile auth={auth} role={role} />} />  
+        <Route path="/alumni-matching-profile" element={<AlumniMatchingProfile auth={auth} role={role} />} /> 
+        <Route path="/my-mentors" element={<MyMentors auth={auth} role={role} />} /> 
+        <Route path="/my-mentees" element={<MyMentees auth={auth} role={role} />} />
         <Route path="/" element={<Home />} />
 
       </Routes>

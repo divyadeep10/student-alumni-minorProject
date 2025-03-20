@@ -12,6 +12,13 @@ const ChatRoom = () => {
   const postListRef = useRef(null);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
+  // Add new state for tags
+  const [newTags, setNewTags] = useState('');
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  // Add search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchByTag, setSearchByTag] = useState(false);
 
   // Add animation states
   const [showNewPostForm, setShowNewPostForm] = useState(false);
@@ -19,7 +26,14 @@ const ChatRoom = () => {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions', {
+      let url = 'http://localhost:5000/api/discussion/discussions';
+      
+      // If tags are selected, use the filter endpoint
+      if (selectedTags.length > 0) {
+        url = `http://localhost:5000/api/discussion/discussions/filter?tags=${selectedTags.join(',')}`;
+      }
+      
+      const res = await axios.get(url, {
         headers: { 'Authorization': token }
       });
       setPosts(res.data);
@@ -32,25 +46,48 @@ const ChatRoom = () => {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/discussion/tags', {
+        headers: { 'Authorization': token }
+      });
+      setAvailableTags(res.data);
+    } catch (err) {
+      console.error('Error fetching tags:', err);
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
+    fetchTags();
     // Set up auto-refresh every 30 seconds
     const interval = setInterval(fetchPosts, 30000);
     return () => clearInterval(interval);
-  }, [token]);
+  }, [token, selectedTags]); // Add selectedTags as dependency
 
   const handlePost = async () => {
     if (!newPost.trim() || !newTitle.trim()) return;
     
+    // Process tags from comma-separated string to array
+    const tagsArray = newTags.split(',')
+      .map(tag => tag.trim())
+      .filter(tag => tag.length > 0);
+    
     setIsLoading(true);
     try {
-      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/discussion/alumni/post', 
-        { title: newTitle, content: newPost }, 
+      await axios.post('http://localhost:5000/api/discussion/alumni/post', 
+        { 
+          title: newTitle, 
+          content: newPost,
+          tags: tagsArray 
+        }, 
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
       setNewPost('');
       setNewTitle('');
+      setNewTags('');
       await fetchPosts();
+      await fetchTags(); // Refresh tags after posting
       setShowNewPostForm(false);
       // Scroll to the top of the post list
       postListRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -71,7 +108,7 @@ const ChatRoom = () => {
     if (!commentText?.trim()) return;
     
     try {
-      await axios.post(`https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions/${postId}/comment`, 
+      await axios.post(`http://localhost:5000/api/discussion/discussions/${postId}/comment`, 
         { comment: commentText }, 
         { headers: { 'Authorization': `Bearer ${token}`} }
       );
@@ -92,11 +129,39 @@ const ChatRoom = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const handleTagSelect = (tag) => {
+      setSelectedTags(prev => {
+        if (prev.includes(tag)) {
+          return prev.filter(t => t !== tag);
+        } else {
+          return [...prev, tag];
+        }
+      });
+    };
+  
   const filteredPosts = filter === 'all' 
     ? posts 
     : posts.filter(post => filter === 'withComments' 
         ? post.comments && post.comments.length > 0 
         : post.comments && post.comments.length === 0);
+
+  // Apply search filtering
+  const searchedPosts = searchQuery.trim() === '' 
+    ? filteredPosts 
+    : filteredPosts.filter(post => {
+        if (searchByTag) {
+          // Search by tags
+          return post.tags && post.tags.some(tag => 
+            tag.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        } else {
+          // Search by title and content
+          return (
+            post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            post.content.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
+      });
 
   return (
     <div className="max-w-4xl mx-auto p-5 pt-24">
@@ -156,6 +221,74 @@ const ChatRoom = () => {
         </div>
       </div>
       
+      {/* Add search bar */}
+      <div className="mb-6">
+        <div className="flex items-center bg-white rounded-lg shadow-sm overflow-hidden">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={searchByTag ? "Search by tags..." : "Search discussions..."}
+            className="flex-grow p-3 focus:outline-none"
+          />
+          <div className="border-l border-gray-200 px-3">
+            <label className="inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={searchByTag}
+                onChange={() => setSearchByTag(!searchByTag)}
+                className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <span className="ml-2 text-gray-700">Search tags</span>
+            </label>
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="p-3 text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+      
+      {/* Add tag filtering section */}
+      <div className="mb-6">
+        <h3 className="text-lg font-medium text-gray-700 mb-2">Filter by Tags</h3>
+        <div className="flex flex-wrap gap-2">
+          {availableTags.map((tag) => (
+            <button
+              key={tag.name}
+              onClick={() => handleTagSelect(tag.name)}
+              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                selectedTags.includes(tag.name)
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {tag.name} ({tag.count})
+            </button>
+          ))}
+          {availableTags.length === 0 && (
+            <p className="text-gray-500 text-sm">No tags available yet</p>
+          )}
+        </div>
+        {selectedTags.length > 0 && (
+          <div className="mt-2 flex items-center">
+            <span className="text-sm text-gray-500 mr-2">Active filters:</span>
+            <button
+              onClick={() => setSelectedTags([])}
+              className="text-sm text-red-600 hover:text-red-800"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+      </div>
+      
       <div 
         className={`bg-white p-6 rounded-lg shadow-md mb-8 transition-all duration-300 overflow-hidden ${
           showNewPostForm ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 hidden'
@@ -170,10 +303,18 @@ const ChatRoom = () => {
           placeholder="Enter title..."
         />
         <textarea 
-          className="w-full h-24 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full h-24 p-3 border border-gray-300 rounded-md mb-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           value={newPost} 
           onChange={(e) => setNewPost(e.target.value)} 
           placeholder="What's on your mind? Share your thoughts or questions..."
+        />
+        {/* Add tags input */}
+        <input 
+          type="text" 
+          className="w-full p-3 border border-gray-300 rounded-md mb-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={newTags} 
+          onChange={(e) => setNewTags(e.target.value)} 
+          placeholder="Add tags (comma separated, e.g. career,technology,mentorship)"
         />
         <button 
           onClick={handlePost} 
@@ -203,13 +344,16 @@ const ChatRoom = () => {
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
-        ) : filteredPosts.length === 0 ? (
+        ) : searchedPosts.length === 0 ? (
           <div className="bg-gray-50 p-8 text-center rounded-lg border border-gray-200">
-            <p className="text-gray-600">No discussions found. {filter !== 'all' ? 'Try changing your filter.' : 'Be the first to start a conversation!'}</p>
+            <p className="text-gray-600">
+              No discussions found. 
+              {searchQuery ? ' Try a different search term.' : filter !== 'all' || selectedTags.length > 0 ? ' Try changing your filters.' : ' Be the first to start a conversation!'}
+            </p>
           </div>
         ) : (
           <ul className="space-y-6">
-            {filteredPosts.map((post, index) => (
+            {searchedPosts.map((post, index) => (
               <li 
                 key={post._id} 
                 className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md transform hover:-translate-y-1"
@@ -218,6 +362,21 @@ const ChatRoom = () => {
                 <div className="p-5">
                   <h4 className="text-xl font-semibold text-gray-800">{post.title}</h4>
                   <p className="mt-2 text-gray-700">{post.content}</p>
+                  
+                  {/* Display post tags */}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {post.tags.map((tag, idx) => (
+                        <span 
+                          key={idx} 
+                          className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
                   <div className="mt-3 flex items-center justify-between text-sm">
                     <p className="text-gray-500">
                       Posted by <span className="font-medium">{post.author?.name || 'Unknown'}</span>
