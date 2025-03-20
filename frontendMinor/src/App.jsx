@@ -17,6 +17,7 @@ import MentorRecommendations from './components/MentorRecommendations';
 import AlumniMatchingProfile from './components/AlumniMatchingProfile';
 import MyMentors from './components/MyMentors';
 import MyMentees from './components/MyMentees';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   // Check if user is authenticated and store role (student/alumni)
@@ -50,10 +51,17 @@ function App() {
         <Route path="/matching-preferences" element={<MatchingPreferences auth={auth} role={role} />} />
         <Route path="/mentor-recommendations" element={<MentorRecommendations auth={auth} role={role} />} /> 
         <Route path="/alumni-matching-profile" element={<AlumniMatchingProfile auth={auth} role={role} />} /> 
-        <Route path="/my-mentors" element={<MyMentors auth={auth} role={role} />} /> 
-        <Route path="/my-mentees" element={<MyMentees auth={auth} role={role} />} />
+        <Route path="/my-mentors" element={
+          <ErrorBoundary>
+            <MyMentors auth={auth} role={role} />
+          </ErrorBoundary>
+        } /> 
+        <Route path="/my-mentees" element={
+          <ErrorBoundary>
+            <MyMentees auth={auth} role={role} />
+          </ErrorBoundary>
+        } />
         <Route path="/" element={<Home />} />
-
       </Routes>
     </Router>
   );

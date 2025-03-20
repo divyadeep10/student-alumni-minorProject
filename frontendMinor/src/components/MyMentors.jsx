@@ -25,7 +25,16 @@ const MyMentors = () => {
         const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/student/my-mentors', {
           headers: { 'Authorization': token }
         });
-        setMentors(response.data.mentors);
+        
+        // Add null check for response.data
+        if (response.data && Array.isArray(response.data.mentors)) {
+          setMentors(response.data.mentors);
+        } else {
+          // Handle case where mentors is not an array
+          console.warn("Received invalid mentors data:", response.data);
+          setMentors([]);
+          setError('Received invalid data format from server');
+        }
       } catch (err) {
         console.error('Error fetching mentors:', err);
         setError('Failed to load your mentors. Please try again later.');
@@ -43,13 +52,50 @@ const MyMentors = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`https://alumni-student-minor-project-backend.vercel.app/api/student/view-mentor/${mentorId}`, {
+      // Check if mentorId is valid
+      if (!mentorId) {
+        throw new Error('Invalid mentor ID');
+      }
+      
+      // Log the request for debugging
+      console.log(`Fetching profile for mentor ID: ${mentorId}`);
+      
+      const response = await axios.get(`https://alumni-student-minor-project-backend.vercel.app/api/alumni/${mentorId}`, {
         headers: { 'Authorization': token }
       });
-      setMentorDetails(response.data);
+      
+      // Add null check for response.data
+      if (response.data) {
+        console.log('Mentor details received:', response.data);
+        
+        // Format the data to match the component's expected structure
+        const formattedData = {
+          mentor: {
+            _id: response.data.id,
+            name: response.data.name,
+            email: response.data.email,
+            collegeId: response.data.collegeId,
+            expertiseAreas: response.data.expertiseAreas ? 
+              // Convert object to array if needed
+              (typeof response.data.expertiseAreas === 'object' ? 
+                Object.values(response.data.expertiseAreas) : 
+                response.data.expertiseAreas) : 
+              [],
+            industryExperience: Array.isArray(response.data.industryExperience) ? 
+              response.data.industryExperience.length : 
+              response.data.industryExperience,
+            mentorStyle: response.data.mentorStyle,
+            bio: response.data.careerInsights
+          }
+        };
+        
+        setMentorDetails(formattedData);
+      } else {
+        setError('Could not load mentor details');
+      }
     } catch (err) {
       console.error('Error fetching mentor details:', err);
-      setError('Failed to load mentor details. Please try again.');
+      setError(`Failed to load mentor details: ${err.response?.status === 404 ? 'Mentor profile not found' : 'Please try again later.'}`);
     } finally {
       setIsLoadingDetails(false);
     }
@@ -111,7 +157,13 @@ const MyMentors = () => {
                       }`}
                     >
                       <p className="font-medium">{mentor.name}</p>
-                      <p className="text-sm opacity-80">{mentor.expertiseAreas?.join(', ')}</p>
+                      <p className="text-sm opacity-80">
+                        {Array.isArray(mentor.expertiseAreas) 
+                          ? mentor.expertiseAreas.join(', ') 
+                          : (typeof mentor.expertiseAreas === 'string' 
+                              ? mentor.expertiseAreas 
+                              : 'No expertise specified')}
+                      </p>
                     </button>
                   </li>
                 ))}
@@ -170,11 +222,23 @@ const MyMentors = () => {
                 <div className="bg-white/5 p-4 rounded-lg mb-6">
                   <h3 className="font-medium text-blue-300 mb-2">Areas of Expertise</h3>
                   <div className="flex flex-wrap gap-2">
-                    {mentorDetails.mentor.expertiseAreas?.map((area, index) => (
-                      <span key={index} className="bg-blue-900/50 px-3 py-1 rounded-full text-sm">
-                        {area}
+                    {Array.isArray(mentorDetails.mentor.expertiseAreas) && mentorDetails.mentor.expertiseAreas.length > 0 ? (
+                      mentorDetails.mentor.expertiseAreas.map((area, index) => (
+                        <span key={index} className="bg-blue-900/50 px-3 py-1 rounded-full text-sm">
+                          {area}
+                        </span>
+                      ))
+                    ) : typeof mentorDetails.mentor.expertiseAreas === 'object' && Object.keys(mentorDetails.mentor.expertiseAreas).length > 0 ? (
+                      Object.values(mentorDetails.mentor.expertiseAreas).map((area, index) => (
+                        <span key={index} className="bg-blue-900/50 px-3 py-1 rounded-full text-sm">
+                          {area}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="bg-blue-900/50 px-3 py-1 rounded-full text-sm">
+                        No expertise specified
                       </span>
-                    ))}
+                    )}
                   </div>
                 </div>
 
