@@ -1,5 +1,5 @@
 // Import the polyfill first
-import './utils/globalPolyfill';
+// import './utils/globalPolyfill';
 
 // src/App.js
 import React, { useState } from 'react';
