@@ -1,3 +1,6 @@
+// Import the polyfill first
+import './utils/globalPolyfill';
+
 // src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -18,6 +21,13 @@ import AlumniMatchingProfile from './components/AlumniMatchingProfile';
 import MyMentors from './components/MyMentors';
 import MyMentees from './components/MyMentees';
 import ErrorBoundary from './components/ErrorBoundary';
+import WebinarVideoUpload from './components/WebinarVideoUpload';
+import MyWebinars from './components/MyWebinars'; // Add this import
+import WebinarVideoPlayer from './components/WebinarVideoPlayer';
+
+// Add these imports
+import LiveStreamHost from './components/LiveStreamHost';
+import LiveStreamViewer from './components/LiveStreamViewer';
 
 function App() {
   // Check if user is authenticated and store role (student/alumni)
@@ -36,12 +46,15 @@ function App() {
     <Router>
       <Navbar role={role} logout={logout} />
       <Routes>
-        {/* <Route path="/" element={<Login setAuth={setAuth} setRole={setRole} />} /> */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setAuth={setAuth} setRole={setRole} />} />
         <Route path="/register" element={<Register />} />
-        {/* <Route path="/" element={<Home />} /> */}
         
-        <Route path="/dashboard" element={<Dashboard auth={auth} role={role} />} />
+        <Route path="/dashboard" element={
+          <ErrorBoundary>
+            <Dashboard auth={auth} role={role} />
+          </ErrorBoundary>
+        } />
         <Route path="/find-mentor" element={<FindMentor auth={auth} role={role} />} />
         <Route path="/requests" element={<Requests auth={auth} role={role} />} />
         <Route path="/webinars" element={<WebinarSchedule auth={auth} role={role} />} />
@@ -61,7 +74,24 @@ function App() {
             <MyMentees auth={auth} role={role} />
           </ErrorBoundary>
         } />
-        <Route path="/" element={<Home />} />
+        <Route path="/my-webinars" element={
+          <ErrorBoundary>
+            <MyWebinars auth={auth} role={role} />
+          </ErrorBoundary>
+        } />
+        
+        <Route path="/webinar-upload/:webinarId" element={
+          <ErrorBoundary>
+            <WebinarVideoUpload auth={auth} role={role} />
+          </ErrorBoundary>
+        } />
+        
+        {/* Add this new route */}
+        <Route path="/webinar-video/:webinarId" element={<WebinarVideoPlayer />} />
+        
+        {/* Add these routes for streaming */}
+        <Route path="/alumni/host" element={<LiveStreamHost />} />
+        <Route path="/stream/view/:roomId" element={<LiveStreamViewer />} />
       </Routes>
     </Router>
   );

@@ -26,7 +26,7 @@ const Login = ({ setAuth, setRole }) => {
     setError('');
     
     try {
-      const res = await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/auth/login', { email, password, role: roleLocal });
+      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password, role: roleLocal });
 
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('role', roleLocal);

@@ -27,7 +27,7 @@ const MentorRecommendations = () => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/matching/recommendations', {
+      const response = await axios.get('http://localhost:5000/api/matching/recommendations', {
         headers: { Authorization: token }
       });
       
@@ -53,7 +53,7 @@ const MentorRecommendations = () => {
       // Fetch status for each mentor
       if (processedMentors.length > 0) {
         const statusPromises = processedMentors.map(mentor => 
-          axios.get(`https://alumni-student-minor-project-backend.vercel.app/api/student/request-status/${mentor._id}`, {
+          axios.get(`http://localhost:5000/api/student/request-status/${mentor._id}`, {
             headers: { Authorization: token },
           }).catch(err => {
             console.error(`Error fetching status for mentor ${mentor._id}:`, err);
@@ -111,7 +111,7 @@ const MentorRecommendations = () => {
     setRequestInProgress(mentorId);
     try {
       const res = await axios.post(
-        'https://alumni-student-minor-project-backend.vercel.app/api/student/request-mentor',
+        'http://localhost:5000/api/student/request-mentor',
         { alumniId: mentorId },
         {
           headers: { 
@@ -152,7 +152,7 @@ const MentorRecommendations = () => {
     e.preventDefault();
     try {
       await axios.post(
-        'https://alumni-student-minor-project-backend.vercel.app/api/matching/feedback', 
+        'http://localhost:5000/api/matching/feedback', 
         {
           alumniId: feedback.alumniId,
           rating: feedback.rating,

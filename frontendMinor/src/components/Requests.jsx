@@ -12,7 +12,7 @@ const Requests = () => {
   const fetchRequests = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/alumni/requests', {
+      const res = await axios.get('http://localhost:5000/api/alumni/requests', {
         headers: { 'Authorization': token }
       });
       setRequests(res.data.requests);
@@ -33,8 +33,8 @@ const Requests = () => {
     setActionInProgress(requestId);
     try {
       const endpoint = action === 'accept' 
-        ? 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/accept-request'
-        : 'https://alumni-student-minor-project-backend.vercel.app/api/alumni/reject-request';
+        ? 'http://localhost:5000/api/alumni/accept-request'
+        : 'http://localhost:5000/api/alumni/reject-request';
       
       await axios.post(endpoint, { requestId }, {
         headers: { 'Authorization': token }

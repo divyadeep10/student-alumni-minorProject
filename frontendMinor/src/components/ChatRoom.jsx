@@ -26,11 +26,11 @@ const ChatRoom = () => {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      let url = 'https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions';
+      let url = 'http://localhost:5000/api/discussion/discussions';
       
       // If tags are selected, use the filter endpoint
       if (selectedTags.length > 0) {
-        url = `https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions/filter?tags=${selectedTags.join(',')}`;
+        url = `http://localhost:5000/api/discussion/discussions/filter?tags=${selectedTags.join(',')}`;
       }
       
       const res = await axios.get(url, {
@@ -48,7 +48,7 @@ const ChatRoom = () => {
 
   const fetchTags = async () => {
     try {
-      const res = await axios.get('https://alumni-student-minor-project-backend.vercel.app/api/discussion/tags', {
+      const res = await axios.get('http://localhost:5000/api/discussion/tags', {
         headers: { 'Authorization': token }
       });
       setAvailableTags(res.data);
@@ -75,7 +75,7 @@ const ChatRoom = () => {
     
     setIsLoading(true);
     try {
-      await axios.post('https://alumni-student-minor-project-backend.vercel.app/api/discussion/alumni/post', 
+      await axios.post('http://localhost:5000/api/discussion/alumni/post', 
         { 
           title: newTitle, 
           content: newPost,
@@ -108,7 +108,7 @@ const ChatRoom = () => {
     if (!commentText?.trim()) return;
     
     try {
-      await axios.post(`https://alumni-student-minor-project-backend.vercel.app/api/discussion/discussions/${postId}/comment`, 
+      await axios.post(`http://localhost:5000/api/discussion/discussions/${postId}/comment`, 
         { comment: commentText }, 
         { headers: { 'Authorization': `Bearer ${token}`} }
       );
